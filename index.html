@@ -911,7 +911,7 @@
 
   <!-- 1. Project Info -->
   <div class="section">
-    <div class="section-head"><div class="num">1</div><h2>Project info</h2><span class="step-label">Step 1 / 5</span></div>
+    <div class="section-head"><div class="num">1</div><h2>Project info</h2><span class="step-label">Step 1 / 6</span></div>
     <div class="section-body">
       <div class="field" style="margin-bottom:14px;">
         <label>Industry sector <span class="req">*</span></label>
@@ -964,7 +964,7 @@
 
   <!-- 2. Character Selection -->
   <div class="section">
-    <div class="section-head"><div class="num">2</div><h2>Character</h2><span class="step-label">Step 2 / 5</span></div>
+    <div class="section-head"><div class="num">2</div><h2>Character</h2><span class="step-label">Step 2 / 6</span></div>
     <div class="section-body">
       <label style="margin-bottom:12px;display:block;">Select character <span class="req">*</span></label>
       <div class="char-grid">
@@ -1011,7 +1011,7 @@
 
   <!-- 3. Environments -->
   <div class="section">
-    <div class="section-head"><div class="num">3</div><h2>Environments &amp; scenes</h2><span class="step-label">Step 3 / 5</span></div>
+    <div class="section-head"><div class="num">3</div><h2>Environments &amp; scenes</h2><span class="step-label">Step 3 / 6</span></div>
     <div class="section-body">
       <p class="hint" style="margin-bottom:14px;">Each environment is a location. Each scene is a task within that environment. Each action is a specific step within a scene.</p>
       <div id="env-list"></div>
@@ -1019,11 +1019,31 @@
     </div>
   </div>
 
-  <!-- 4. Photos -->
+  <!-- 4. Before & After Cleaning -->
   <div class="section">
-    <div class="section-head"><div class="num">4</div>
+    <div class="section-head"><div class="num">4</div><h2>Before &amp; after cleaning</h2><span class="step-label">Step 4 / 6</span></div>
+    <div class="section-body">
+      <p class="hint" style="margin-bottom:14px;">These are spoken as "Before you start" and "After you finish" in the voiceover. Leave empty if not needed — an empty section is simply skipped.</p>
+      <div class="field-grid col-2" style="gap:20px;">
+        <div class="field">
+          <label>Before you start</label>
+          <div id="before-list" style="margin-bottom:8px;"></div>
+          <button type="button" class="btn-ghost" onclick="addBeforeAfterRow('before')">+ Add before action</button>
+        </div>
+        <div class="field">
+          <label>After you finish</label>
+          <div id="after-list" style="margin-bottom:8px;"></div>
+          <button type="button" class="btn-ghost" onclick="addBeforeAfterRow('after')">+ Add after action</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Photos -->
+  <div class="section">
+    <div class="section-head"><div class="num">5</div>
       <h2>Reference photos</h2>
-      <span class="step-label">Step 4 / 5</span>
+      <span class="step-label">Step 5 / 6</span>
       <div style="margin-left:14px;">
         <div class="drive-status" id="drive-status"></div>
       </div>
@@ -1042,7 +1062,7 @@
 
   <!-- 5. Notes -->
   <div class="section">
-    <div class="section-head"><div class="num">5</div><h2>Notes &amp; constraints</h2><span class="step-label">Step 5 / 5</span></div>
+    <div class="section-head"><div class="num">6</div><h2>Notes &amp; constraints</h2><span class="step-label">Step 6 / 6</span></div>
     <div class="section-body">
       <div class="field-grid" style="gap:14px;">
 
@@ -1056,7 +1076,7 @@
           <textarea id="f-notes" placeholder="Anything else the production team should know"></textarea>
         </div>
         <div class="field">
-          <label>Disclaimer <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px;">— paste this text at the end of the video</span></label>
+          <label>Disclaimer <span class="req">*</span> <span style="font-weight:400;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11px;">— paste this text at the end of the video</span></label>
           <textarea id="f-disclaimer" rows="4" placeholder="e.g. This video is intended for trained professionals only. Always follow local regulations and safety guidelines..."></textarea>
         </div>
       </div>
@@ -1074,7 +1094,7 @@
 
   <div class="page-footer">
     <span>Diversey Value Academy · Production tooling</span>
-    <span>Brief Generator v2.0</span>
+    <span>Brief Generator v3.0</span>
   </div>
 </div>
 
@@ -1091,7 +1111,7 @@
 </div>
 
 <script>
-  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzov7EHD3WHDM8xM2osAXZbr_ljnZALXHLesRSBEL0Qtxnp0Lo0Ct2zYVL4N7BA4JI/exec';
+  const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycby3BTIDWAfSrgDWcv8coOmTpe4zbiY_zjbHcfGdikZNzaHzoqnAR6-J8zu-rj9M1Afm/exec';
   const WEBHOOK_URL_GET = WEBHOOK_URL;
 
   let envCount = 0;
@@ -1514,6 +1534,29 @@
     document.getElementById('actions-' + sceneId).appendChild(div);
   }
 
+  /* ─── Before / After cleaning ─── */
+  var BEFORE_OPTIONS = ['Wear latex gloves', 'Wear nitrile gloves', 'Wash your hands', 'Wear a mask', 'Wear safety goggles', 'Check that all products and tools are available'];
+  var AFTER_OPTIONS = ['Discard gloves', 'Wash your hands', 'Discard microfiber cloths', 'Discard mask', 'Dispose of used materials properly'];
+
+  function addBeforeAfterRow(kind) {
+    const opts = (kind === 'before' ? BEFORE_OPTIONS : AFTER_OPTIONS)
+      .map(o => `<option>${o}</option>`).join('');
+    const list = document.getElementById(kind + '-list');
+    const row = document.createElement('div');
+    row.className = kind + '-item-row';
+    row.style.cssText = 'display:flex;gap:8px;align-items:center;margin-bottom:6px;';
+    row.innerHTML = `
+      <select class="${kind}-item-select" style="flex:1;">
+        <option value="">Select an action...</option>${opts}
+      </select>
+      <button type="button" class="btn-remove" onclick="this.closest('.${kind}-item-row').remove()" style="flex-shrink:0;">✕</button>`;
+    list.appendChild(row);
+  }
+  function getBeforeAfterItems(kind) {
+    return [...document.querySelectorAll(`#${kind}-list .${kind}-item-select`)]
+      .map(s => s.value).filter(Boolean);
+  }
+
   /* ─── Helpers ─── */
   function toggleDispenser(cb) {
     cb.closest('.field').querySelector('.scene-dispenser').style.display = cb.checked ? 'block' : 'none';
@@ -1667,6 +1710,9 @@
       uniform: document.getElementById('f-uniform').value,
       environments,
 
+      beforeActions: getBeforeAfterItems('before'),
+      afterActions: getBeforeAfterItems('after'),
+
       donts: document.getElementById('f-donts').value,
       notes: document.getElementById('f-notes').value,
       disclaimer: document.getElementById('f-disclaimer').value,
@@ -1693,6 +1739,7 @@
         if (!scene.description) return 'Scene description is required for all scenes.';
       }
     }
+    if (!data.disclaimer) return 'Disclaimer is required.';
     return null;
   }
 
@@ -1783,12 +1830,10 @@
   }
   loadFormData();
 
-  /* ─── Init ─── */
-  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
-  initUploadcare();
-  addEnv();
-
   /* ─── Intro animation ─── */
+  /* Registered FIRST and defensively: if an external dependency below (e.g.
+     the Uploadcare CDN widget) fails to load or throws, this dismiss timer
+     must already be running so the overlay never gets stuck on screen. */
   (function playIntro() {
     const overlay = document.getElementById('intro-overlay');
     if (!overlay) return;
@@ -1813,6 +1858,12 @@
     setTimeout(dismiss, 1900);
     overlay.addEventListener('click', dismiss);
   })();
+
+  /* ─── Init ─── */
+  document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
+  try { initUploadcare(); } catch (e) { console.warn('Uploadcare widget unavailable:', e); }
+  addEnv();
+
 </script>
 <script type="text/babel" src="tweaks-panel.jsx"></script>
 <script type="text/babel" src="brief-tweaks.jsx"></script>
